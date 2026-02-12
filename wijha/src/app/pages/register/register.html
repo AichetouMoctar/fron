@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - Wijha</title>
+    
+    <!-- Font Awesome & Google Fonts -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Style Thalyf -->
+    <!-- <link rel="stylesheet" href="/css/register.css"> -->
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="bg-element bg-1"></div>
+    <div class="bg-element bg-2"></div>
+    <div class="bg-element bg-3"></div>
+    
+    <!-- Register Card -->
+    <div class="login-card register-card">
+        <!-- Header -->
+        <div class="login-header">
+            <i class="fas fa-bus logo-icon"></i>
+            <h1>Wijha</h1>
+            <p>Créer un compte</p>
+        </div>
+        
+        <!-- Body -->
+        <div class="login-body">
+            <!-- Messages -->
+            <div *ngIf="errorMessage" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>{{ errorMessage }}</span>
+            </div>
+            <div *ngIf="successMessage" class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span>{{ successMessage }}</span>
+            </div>
+            
+            <!-- Formulaire Angular -->
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                <!-- Grille 2 colonnes -->
+                <div class="form-row">
+                    <!-- Nom complet -->
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-user"></i> Nom complet *
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   formControlName="nom"
+                                   [class.is-invalid]="f['nom'].invalid && (f['nom'].dirty || f['nom'].touched)"
+                                   placeholder="Votre nom">
+                            <div *ngIf="f['nom'].invalid && (f['nom'].dirty || f['nom'].touched)" 
+                                 class="invalid-feedback">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span *ngIf="f['nom'].errors?.['required']">Le nom est requis</span>
+                                <span *ngIf="f['nom'].errors?.['minlength']">Minimum 2 caractères</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-envelope"></i> Email *
+                            </label>
+                            <input type="email" 
+                                   class="form-control" 
+                                   formControlName="email"
+                                   [class.is-invalid]="f['email'].invalid && (f['email'].dirty || f['email'].touched)"
+                                   placeholder="exemple@stp.mr">
+                            <div *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)" 
+                                 class="invalid-feedback">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span *ngIf="f['email'].errors?.['required']">L'email est requis</span>
+                                <span *ngIf="f['email'].errors?.['email']">Format invalide</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <!-- Téléphone -->
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-phone"></i> Téléphone
+                            </label>
+                            <input type="tel" 
+                                   class="form-control" 
+                                   formControlName="telephone"
+                                   [class.is-invalid]="f['telephone'].invalid && (f['telephone'].dirty || f['telephone'].touched)"
+                                   placeholder="+222 12 34 56 78">
+                            <div *ngIf="f['telephone'].invalid && (f['telephone'].dirty || f['telephone'].touched)" 
+                                 class="invalid-feedback">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Format invalide (8-15 chiffres)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rôle -->
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-user-tag"></i> Rôle *
+                            </label>
+                            <select class="form-control" 
+                                    formControlName="role"
+                                    [class.is-invalid]="f['role'].invalid && (f['role'].dirty || f['role'].touched)">
+                                <option *ngFor="let r of roles" [value]="r.value">{{ r.label }}</option>
+                            </select>
+                            <div *ngIf="f['role'].invalid && (f['role'].dirty || f['role'].touched)" 
+                                 class="invalid-feedback">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Le rôle est requis
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <!-- Mot de passe -->
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-lock"></i> Mot de passe *
+                            </label>
+                            <div class="input-wrapper">
+                                <input [type]="passwordVisible ? 'text' : 'password'" 
+                                       class="form-control" 
+                                       formControlName="motDePasse"
+                                       [class.is-invalid]="f['motDePasse'].invalid && (f['motDePasse'].dirty || f['motDePasse'].touched)"
+                                       placeholder="••••••••">
+                                <button type="button" class="password-toggle" (click)="togglePassword()">
+                                    <i [class]="passwordVisible ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                                </button>
+                            </div>
+                            <div *ngIf="f['motDePasse'].invalid && (f['motDePasse'].dirty || f['motDePasse'].touched)" 
+                                 class="invalid-feedback">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span *ngIf="f['motDePasse'].errors?.['required']">Le mot de passe est requis</span>
+                                <span *ngIf="f['motDePasse'].errors?.['minlength']">Minimum 6 caractères</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Confirmation -->
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-lock"></i> Confirmer le mot de passe *
+                            </label>
+                            <div class="input-wrapper">
+                                <input [type]="confirmPasswordVisible ? 'text' : 'password'" 
+                                       class="form-control" 
+                                       formControlName="confirmMotDePasse"
+                                       [class.is-invalid]="registerForm.errors?.['passwordMismatch'] && (f['confirmMotDePasse'].dirty || f['confirmMotDePasse'].touched)"
+                                       placeholder="••••••••">
+                                <button type="button" class="password-toggle" (click)="toggleConfirmPassword()">
+                                    <i [class]="confirmPasswordVisible ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                                </button>
+                            </div>
+                            <div *ngIf="registerForm.errors?.['passwordMismatch'] && (f['confirmMotDePasse'].dirty || f['confirmMotDePasse'].touched)" 
+                                 class="invalid-feedback">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Les mots de passe ne correspondent pas
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Localisation (pleine largeur) -->
+                <div class="location-fields">
+                    <div class="location-field">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-map-marker-alt"></i> Latitude
+                            </label>
+                            <input type="number" step="0.0000001" class="form-control" formControlName="latitude">
+                        </div>
+                    </div>
+                    <div class="location-field">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-map-marker-alt"></i> Longitude
+                            </label>
+                            <input type="number" step="0.0000001" class="form-control" formControlName="longitude">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bouton d'inscription -->
+                <button type="submit" class="btn-register" [disabled]="registerForm.invalid || isLoading">
+                    <span *ngIf="isLoading" class="spinner-border"></span>
+                    <i class="fas fa-user-plus"></i> S'inscrire
+                </button>
+            </form>
+            
+            <!-- Lien vers connexion -->
+            <div class="register-links">
+                <a routerLink="/login">
+                    <i class="fas fa-sign-in-alt"></i> Déjà un compte ? Se connecter
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
