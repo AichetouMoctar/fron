@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard'; 
 import { LoginComponent } from './pages/login/login';
 import { RegisterComponent } from './pages/register/register';
+import { LineListComponent } from './components/line-list/line-list.component';
 
 export const routes: Routes = [
   // Pages publiques
@@ -11,7 +12,9 @@ export const routes: Routes = [
   {
     path: 'register',component : RegisterComponent
   },
-
+  {
+    path: '',component : LineListComponent
+  },
   // Pages protégées (nécessitent authentification)
 //   {
 //     path: 'taches',
