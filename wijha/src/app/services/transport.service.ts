@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class TransportService {
   // URL de base pointant vers ton backend Spring Boot (Port 8082)
-  private baseUrl = 'http://localhost:8082/api/mobile';
+  private baseUrl = 'http://localhost:8080/api/mobile';
 
   constructor(private http: HttpClient) {}
 
