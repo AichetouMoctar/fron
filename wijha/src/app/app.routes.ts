@@ -1,35 +1,68 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './guards/auth.guard'; 
-import { LoginComponent } from './pages/login/login';
-import { RegisterComponent } from './pages/register/register';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-  // Pages publiques
+  // Pages publiques (pas de layout)
   {
-    path: 'login',component :LoginComponent
+    path: 'login',
+    loadComponent: () => import('./pages/login/login').then(m => m.LoginComponent)
   },
   {
-    path: 'register',component : RegisterComponent
+    path: 'register',
+    loadComponent: () => import('./pages/register/register').then(m => m.RegisterComponent)
   },
 
-  // Pages protégées (nécessitent authentification)
-//   {
-//     path: 'taches',
-//     loadComponent: () => import('./pages/taches/taches').then(m => m.Taches),
-//     canActivate: [authGuard]
-//   },
-//   {
-//     path: 'students',
-//     loadComponent: () => import('./pages/student/student').then(m => m.Student),
-//     canActivate: [authGuard]
-//   },
-//   {
-//     path: 'articles',
-//     loadComponent: () => import('./pages/articles/articles').then(m => m.Articles),
-//     canActivate: [authGuard]
-//   },
+  // Pages protégées (avec layout)
+  {
+    path: 'home',
+    loadComponent: () => import('./components/home/home').then(m => m.HomeComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'lines',
+    loadComponent: () => import('./components/line-list/line-list.component').then(m => m.LineListComponent),
+    canActivate: [authGuard]
+  },
+  // {
+  //   path: 'lines/:id',
+  //   loadComponent: () => import('./pages/line-detail/line-detail.component').then(m => m.LineDetailComponent),
+  //   canActivate: [authGuard]
+  // },
+  // {
+  //   path: 'stops',
+  //   loadComponent: () => import('./pages/stops/stops.component').then(m => m.StopsComponent),
+  //   canActivate: [authGuard]
+  // },
 
-//   // Redirections
-//   { path: '', redirectTo: '/taches', pathMatch: 'full' },
-//   { path: '**', redirectTo: '/taches' }
+  // Redirections
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: '**', redirectTo: '/home' }
 ];
+
+
+
+// // src/app/app.routes.ts
+// import { Routes } from '@angular/router';
+// import { authGuard } from './guards/auth.guard';
+
+// export const routes: Routes = [
+//   // ===== Pages publiques =====
+//   {
+//     path: 'login',
+//     loadComponent: () => import('./pages/login/login').then(m => m.LoginComponent)
+//   },
+//   {
+//     path: 'register',
+//     loadComponent: () => import('./pages/register/register').then(m => m.RegisterComponent)
+//   },
+
+//   // ===== Pages protégées (citoyen) =====
+//   {
+//     path: 'map',
+//     loadComponent: () => import('../app/components/line-list/line-list.component').then(m => m.LineListComponent),
+//     canActivate: [authGuard]
+//   },
+//   { path: '', redirectTo: '/map', pathMatch: 'full' },
+//   { path: '**', redirectTo: '/map' }
+// ];
+

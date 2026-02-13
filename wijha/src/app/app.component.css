@@ -1,0 +1,190 @@
+/* ===== Reset ===== */
+:host {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f1f5f9;
+}
+
+/* ========================================
+   HEADER
+======================================== */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #1e293b;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.header-left .logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.header-left .logo i {
+  font-size: 20px;
+  color: #3b82f6;
+}
+
+/* Desktop nav */
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.desktop-nav .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.desktop-nav .nav-link:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.desktop-nav .nav-link.active {
+  color: white;
+  background: #3b82f6;
+}
+
+.desktop-nav .nav-link i {
+  font-size: 14px;
+}
+
+/* Header right */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-name {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.btn-logout {
+  background: none;
+  border: 1px solid #475569;
+  color: #94a3b8;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.btn-logout:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: white;
+}
+
+/* ========================================
+   MAIN CONTENT
+======================================== */
+main.with-layout {
+  padding-top: 56px;      /* hauteur du header */
+  padding-bottom: 64px;   /* hauteur du bottom-nav mobile */
+  min-height: 100vh;
+}
+
+/* ========================================
+   BOTTOM NAVIGATION (mobile)
+======================================== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border-top: 1px solid #e2e8f0;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 16px;
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 500;
+  transition: color 0.2s;
+  min-width: 64px;
+}
+
+.bottom-nav-item i {
+  font-size: 20px;
+}
+
+.bottom-nav-item.active {
+  color: #3b82f6;
+}
+
+.bottom-nav-item:hover {
+  color: #3b82f6;
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+/* Mobile : cacher nav desktop, afficher bottom nav */
+@media (max-width: 768px) {
+  .desktop-nav {
+    display: none;
+  }
+  .user-name {
+    display: none;
+  }
+  main.with-layout {
+    padding-bottom: 64px;
+  }
+}
+
+/* Desktop : cacher bottom nav */
+@media (min-width: 769px) {
+  .bottom-nav {
+    display: none;
+  }
+  main.with-layout {
+    padding-bottom: 0;
+  }
+}

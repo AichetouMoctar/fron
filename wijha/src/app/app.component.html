@@ -1,4 +1,50 @@
+<!-- LAYOUT (header + bottom nav) seulement si pas login/register -->
+@if (showLayout) {
+  <!-- ===== HEADER ===== -->
+  <header class="app-header">
+    <div class="header-left">
+      <a routerLink="/home" class="logo">
+        <i class="fas fa-bus"></i>
+        <span>WIJHA</span>
+      </a>
+    </div>
 
-index page
+    <!-- Nav desktop -->
+    <nav class="desktop-nav">
+      @for (item of navItems; track item.path) {
+        <a [routerLink]="item.path"
+           routerLinkActive="active"
+           class="nav-link">
+          <i [class]="item.icon"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
 
-<router-outlet />
+    <div class="header-right">
+      <span class="user-name">{{ authService.getCurrentUser()?.nom }}</span>
+      <button class="btn-logout" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+    </div>
+  </header>
+}
+
+<!-- ===== CONTENU PRINCIPAL ===== -->
+<main [class.with-layout]="showLayout">
+  <router-outlet />
+</main>
+
+<!-- ===== BOTTOM NAV (mobile) ===== -->
+@if (showLayout) {
+  <nav class="bottom-nav">
+    @for (item of navItems; track item.path) {
+      <a [routerLink]="item.path"
+         routerLinkActive="active"
+         class="bottom-nav-item">
+        <i [class]="item.icon"></i>
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+}

@@ -1,109 +1,89 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - </title>
-    
-    <!-- Font Awesome & Google Fonts -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Style Thalyf -->
-    <link rel="stylesheet" href="/css/login.css">
-</head>
-<body>
-    <!-- Background Elements -->
-    <div class="bg-element bg-1"></div>
-    <div class="bg-element bg-2"></div>
-    <div class="bg-element bg-3"></div>
-    
-    <!-- Login Card -->
-    <div class="login-card">
-        <!-- Header -->
-        <div class="login-header">
-            <i class="fas fa-bus logo-icon"></i>
-            <h1>Wijha</h1>
-            <p>Système de Transport </p>
-        </div>
-        
-        <!-- Body -->
-        <div class="login-body">
-            <!-- Message d'erreur -->
-            <div *ngIf="errorMessage" class="alert alert-error">
-                <i class="fas fa-exclamation-circle"></i>
-                <span>{{ errorMessage }}</span>
-            </div>
-            
-            <!-- Formulaire Angular -->
-            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-                <!-- Email -->
-                <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-envelope"></i> Adresse Email
-                    </label>
-                    <div class="input-wrapper">
-                        <input type="email" 
-                               class="form-control" 
-                               formControlName="email"
-                               [class.is-invalid]="f['email'].invalid && (f['email'].dirty || f['email'].touched)"
-                               placeholder="exemple@stp-mauritanie.mr"
-                               autocomplete="username">
-                    </div>
-                    <div *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)" 
-                         class="invalid-feedback">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span *ngIf="f['email'].errors?.['required']">L'email est requis</span>
-                        <span *ngIf="f['email'].errors?.['email']">Format invalide</span>
-                    </div>
-                    <div class="field-hint">
-                        <i class="fas fa-info-circle"></i> Utilisez votre email professionnel
-                    </div>
-                </div>
-                
-                <!-- Mot de passe -->
-                <div class="form-group">
-                    <label class="form-label">
-                        <i class="fas fa-lock"></i> Mot de passe
-                    </label>
-                    <div class="input-wrapper">
-                        <input [type]="passwordVisible ? 'text' : 'password'" 
-                               class="form-control" 
-                               formControlName="password"
-                               [class.is-invalid]="f['password'].invalid && (f['password'].dirty || f['password'].touched)"
-                               placeholder="••••••••"
-                               autocomplete="current-password">
-                        <button type="button" class="password-toggle" (click)="togglePassword()">
-                            <i [class]="passwordVisible ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
-                        </button>
-                    </div>
-                    <div *ngIf="f['password'].invalid && (f['password'].dirty || f['password'].touched)" 
-                         class="invalid-feedback">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <span *ngIf="f['password'].errors?.['required']">Le mot de passe est requis</span>
-                        <span *ngIf="f['password'].errors?.['minlength']">Minimum 6 caractères</span>
-                    </div>
-                    <div class="field-hint">
-                        <i class="fas fa-info-circle"></i> Minimum 6 caractères
-                    </div>
-                </div>
-                
-                <!-- Bouton de connexion -->
-                <button type="submit" class="btn-login" [disabled]="loginForm.invalid || isLoading">
-                    <span *ngIf="isLoading" class="spinner-border"></span>
-                    <i class="fas fa-sign-in-alt"></i> Se connecter
-                </button>
-            </form>
+<!-- src/app/pages/login/login.html -->
+<div class="login-page">
+  <!-- Background -->
+  <div class="bg-element bg-1"></div>
+  <div class="bg-element bg-2"></div>
+  <div class="bg-element bg-3"></div>
 
-            
-            <!-- Liens -->
-            <div class="login-links">
-                <a routerLink="/register">
-                    <i class="fas fa-user-plus"></i> Pas encore de compte ? S'inscrire
-                </a>
-
-            </div>
-        </div>
+  <!-- Card -->
+  <div class="login-card">
+    <!-- Header -->
+    <div class="login-header">
+      <i class="fas fa-bus logo-icon"></i>
+      <h1>Wijha</h1>
+      <p>Système de Transport</p>
     </div>
-</body>
-</html>
+
+    <!-- Body -->
+    <div class="login-body">
+      <!-- Erreur -->
+      @if (errorMessage) {
+        <div class="alert alert-error">
+          <i class="fas fa-exclamation-circle"></i>
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
+
+      <!-- Formulaire -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-envelope"></i> Adresse Email
+          </label>
+          <input type="email"
+                 class="form-control"
+                 formControlName="email"
+                 [class.is-invalid]="f['email'].invalid && (f['email'].dirty || f['email'].touched)"
+                 placeholder="exemple@email.mr"
+                 autocomplete="username">
+          @if (f['email'].invalid && (f['email'].dirty || f['email'].touched)) {
+            <div class="invalid-feedback">
+              <i class="fas fa-exclamation-circle"></i>
+              @if (f['email'].errors?.['required']) { <span>L'email est requis</span> }
+              @if (f['email'].errors?.['email']) { <span>Format invalide</span> }
+            </div>
+          }
+        </div>
+
+        <!-- Mot de passe -->
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-lock"></i> Mot de passe
+          </label>
+          <div class="input-wrapper">
+            <input [type]="passwordVisible ? 'text' : 'password'"
+                   class="form-control"
+                   formControlName="password"
+                   [class.is-invalid]="f['password'].invalid && (f['password'].dirty || f['password'].touched)"
+                   placeholder="••••••••"
+                   autocomplete="current-password">
+            <button type="button" class="password-toggle" (click)="togglePassword()">
+              <i [class]="passwordVisible ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+            </button>
+          </div>
+          @if (f['password'].invalid && (f['password'].dirty || f['password'].touched)) {
+            <div class="invalid-feedback">
+              <i class="fas fa-exclamation-circle"></i>
+              @if (f['password'].errors?.['required']) { <span>Le mot de passe est requis</span> }
+              @if (f['password'].errors?.['minlength']) { <span>Minimum 6 caractères</span> }
+            </div>
+          }
+        </div>
+
+        <!-- Bouton -->
+        <button type="submit" class="btn-login" [disabled]="loginForm.invalid || isLoading">
+          @if (isLoading) { <span class="spinner-border"></span> }
+          <i class="fas fa-sign-in-alt"></i> Se connecter
+        </button>
+      </form>
+
+      <!-- Lien inscription -->
+      <div class="login-links">
+        <a routerLink="/register">
+          <i class="fas fa-user-plus"></i> Pas encore de compte ? S'inscrire
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
