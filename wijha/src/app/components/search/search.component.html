@@ -1,0 +1,58 @@
+<div class="planifier-itineraire">
+  <h3>PLANIFIER UN ITINÉRAIRE</h3>
+
+  <div class="search-group">
+    <label>Départ</label>
+    <div class="input-wrapper">
+      <input type="text" 
+             placeholder="D'où partez-vous ?" 
+             [(ngModel)]="departQuery"
+             (input)="onDepartChange()">
+      
+      <ul class="suggestion-list" *ngIf="departSuggestions.length > 0">
+        <li *ngFor="let s of departSuggestions" (click)="selectDepart(s)">
+          <i class="fas fa-map-marker-alt"></i> {{ s.nom }}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="search-group">
+    <label>Arrivée</label>
+    <div class="input-wrapper">
+      <input type="text" 
+             placeholder="Où allez-vous ?" 
+             [(ngModel)]="arriveeQuery"
+             (input)="onArriveeChange()">
+      
+      <ul class="suggestion-list" *ngIf="arriveeSuggestions.length > 0">
+        <li *ngFor="let s of arriveeSuggestions" (click)="selectArrivee(s)">
+          <i class="fas fa-flag-checkered"></i> {{ s.nom }}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <button class="btn-rechercher" (click)="search()" [disabled]="!selectedDepart || !selectedArrivee">
+    <i class="fas fa-search"></i> Trouver mon trajet
+  </button>
+
+  <hr *ngIf="itineraires.length > 0">
+
+  <div class="results-container" *ngIf="itineraires.length > 0">
+    <h4>Trajets disponibles</h4>
+    <div *ngFor="let itin of itineraires" class="result-card">
+      <div class="result-header">
+        <span class="ligne-badge">Ligne {{ itin.ligneNom }}</span>
+        <span class="price">{{ itin.prix }} MRU</span>
+      </div>
+      <div class="result-body">
+        <p><strong>De:</strong> {{ itin.arretDepart }}</p>
+        <p><strong>À:</strong> {{ itin.arretArrivee }}</p>
+      </div>
+      <div class="result-footer">
+        <span><i class="far fa-clock"></i> env. {{ itin.dureeEstimee }} min</span>
+      </div>
+    </div>
+  </div>
+</div>
