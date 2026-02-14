@@ -16,9 +16,8 @@ export class AppComponent {
   private router = inject(Router);
 
   showLayout = false;
-  mobileMenuOpen = false;
+  showLogoutModal = false;
 
-  // Pages sans layout
   private noLayoutRoutes = ['/login', '/register'];
 
   constructor() {
@@ -26,36 +25,24 @@ export class AppComponent {
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       this.showLayout = !this.noLayoutRoutes.includes(event.urlAfterRedirects);
-      this.mobileMenuOpen = false; // Fermer le menu mobile après navigation
     });
   }
 
   navItems = [
-    { path: '/home',   label: 'Accueil',  icon: 'fas fa-home' },
-    { path: '/lines',  label: 'Lignes',   icon: 'fas fa-route' },
-    { path: '/stops',  label: 'Arrêts',   icon: 'fas fa-map-marker-alt' },
+    { path: '/home',  label: 'Accueil' },
+    { path: '/lines', label: 'Lignes' },
   ];
 
-  toggleMobileMenu() {
-    this.mobileMenuOpen = !this.mobileMenuOpen;
+  openLogoutModal() {
+    this.showLogoutModal = true;
   }
 
-  logout() {
+  closeLogoutModal() {
+    this.showLogoutModal = false;
+  }
+
+  confirmLogout() {
+    this.showLogoutModal = false;
     this.authService.logout();
   }
 }
-
-
-
-// import { Component } from '@angular/core';
-// import { RouterOutlet } from '@angular/router';
-
-// @Component({
-//   selector: 'app-root',
-//   imports: [RouterOutlet],
-//   templateUrl: './app.component.html',
-//   styleUrl: './app.component.css'
-// })
-// export class AppComponent {
-//   title = 'wijha';
-// }

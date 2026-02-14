@@ -1,66 +1,102 @@
 <div class="home-page">
-  <!-- Hero section -->
-  <div class="hero">
-    <h1>Bienvenue sur WIJHA</h1>
-    <p>Consultez le réseau de transport de Nouakchott en temps réel</p>
-
-    <button class="btn-gps" (click)="findNearby()" [disabled]="isSearchingNearby">
-      <i class="fas fa-crosshairs" [class.fa-spin]="isSearchingNearby"></i>
-      {{ isSearchingNearby ? 'Recherche...' : 'Arrêts autour de moi' }}
-    </button>
-  </div>
-
-  <!-- Arrêts proches -->
-  @if (nearbyStops.length > 0) {
-    <section class="section">
-      <h2 class="section-title">
-        <i class="fas fa-map-marker-alt"></i> Arrêts à proximité
-      </h2>
-      <div class="cards-grid">
-        @for (stop of nearbyStops; track stop.id) {
-          <div class="stop-card">
-            <div class="stop-icon">
-              <i class="fas fa-map-pin"></i>
-            </div>
-            <div class="stop-info">
-              <strong>{{ stop.nom }}</strong>
-              @if (stop.distance) {
-                <span class="distance">{{ stop.distance }}m</span>
-              }
-            </div>
-          </div>
-        }
-      </div>
-    </section>
-  }
-
-  <!-- Lignes rapides -->
-  <section class="section">
-    <div class="section-header">
-      <h2 class="section-title">
-        <i class="fas fa-route"></i> Lignes de transport
-      </h2>
-      <a routerLink="/lines" class="see-all">Voir tout <i class="fas fa-arrow-right"></i></a>
-    </div>
-    <div class="cards-grid">
-      @for (ligne of lignes.slice(0, 6); track ligne.id) {
-        <a [routerLink]="['/lines', ligne.id]" class="line-card">
-          <div class="line-badge" [style.background]="ligne.couleur || '#3b82f6'">
-            {{ ligne.code || 'L' }}
-          </div>
-          <div class="line-info">
-            <strong>{{ ligne.nom }}</strong>
-            <span class="line-sub">{{ ligne.arretDepart }} → {{ ligne.arretArrivee }}</span>
-          </div>
-          <i class="fas fa-chevron-right"></i>
-        </a>
+  <div class="map-section">
+    <!-- Carte -->
+    <div id="map-canvas" class="map-canvas">
+      @if (isLoading) {
+        <div class="map-loading">
+          <i class="fas fa-spinner fa-spin"></i>
+          <span>Chargement de la carte...</span>
+        </div>
       }
     </div>
-    @if (lignes.length === 0) {
-      <div class="empty-state">
-        <i class="fas fa-bus"></i>
-        <p>Aucune ligne disponible</p>
+
+    <!-- Stats overlay -->
+    @if (network) {
+      <div class="stats-row">
+        <div class="stat-card">
+          <i class="fas fa-route"></i>
+          <div><strong>{{ network.lignes?.length || 0 }}</strong><span>Lignes</span></div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-map-pin"></i>
+          <div><strong>{{ network.arrets?.length || 0 }}</strong><span>Arrêts</span></div>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-bus"></i>
+          <div><strong>{{ network.busEnService?.length || 0 }}</strong><span>Bus</span></div>
+        </div>
       </div>
     }
-  </section>
+
+    <!-- Contrôles -->
+    <div class="map-controls">
+      <button class="ctrl-btn" (click)="centerOnUser()" title="Ma position">
+        <i class="fas fa-crosshairs"></i>
+      </button>
+      <button class="ctrl-btn" (click)="refreshMap()" title="Actualiser">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+      <button class="ctrl-btn" [class.active]="showArrets" (click)="toggleArrets()" title="Arrêts">
+        <i class="fas fa-map-pin"></i>
+      </button>
+      <button class="ctrl-btn" [class.active]="showBus" (click)="toggleBus()" title="Bus">
+        <i class="fas fa-bus"></i>
+      </button>
+      <button class="ctrl-btn" [class.active]="showLignes" (click)="toggleLignes()" title="Lignes">
+        <i class="fas fa-route"></i>
+      </button>
+    </div>
+
+    <!-- Légende -->
+    <div class="map-legend">
+      <div class="legend-item"><span class="dot" style="background:#3b82f6"></span> Vous</div>
+      <div class="legend-item"><span class="dot" style="background:#f59e0b"></span> Arrêts</div>
+      <div class="legend-item"><span class="dot" style="background:#10b981"></span> Bus</div>
+    </div>
+
+    <!-- Ligne sélectionnée -->
+    @if (selectedLigne) {
+      <div class="selected-line-info">
+        <div class="sli-header">
+          <div class="sli-badge" [style.background]="selectedLigne.couleur || '#3b82f6'">
+            {{ selectedLigne.code }}
+          </div>
+          <div>
+            <strong>{{ selectedLigne.nom }}</strong>
+            <span>{{ selectedLigne.arretDepart }} → {{ selectedLigne.arretArrivee }}</span>
+          </div>
+          <button class="sli-close" (click)="filterByLigne(selectedLigne)">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="sli-stops">
+          @for (arret of selectedLigne.arrets; track arret.id; let first = $first; let last = $last) {
+            <div class="sli-stop" [class.first]="first" [class.last]="last">
+              <div class="sli-dot" [style.border-color]="selectedLigne.couleur || '#3b82f6'"
+                   [style.background]="first || last ? (selectedLigne.couleur || '#3b82f6') : 'white'"></div>
+              <span>{{ arret.nom }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Filtre lignes -->
+    @if (network?.lignes && network.lignes.length > 0) {
+      <div class="lines-filter">
+        <h3 class="filter-title"><i class="fas fa-filter"></i> Filtrer par ligne</h3>
+        <div class="filter-chips">
+          @for (ligne of network.lignes; track ligne.id) {
+            <button class="chip"
+                    [class.active]="selectedLigne?.id === ligne.id"
+                    [style.--chip-color]="ligne.couleur || '#3b82f6'"
+                    (click)="filterByLigne(ligne)">
+              <span class="chip-badge" [style.background]="ligne.couleur || '#3b82f6'">{{ ligne.code }}</span>
+              <span class="chip-name">{{ ligne.nom }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
 </div>

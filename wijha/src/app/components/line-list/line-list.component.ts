@@ -1,94 +1,85 @@
-import { Component, OnInit } from '@angular/core';
-import { TransportService } from '../../services/transport.service';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TransportService } from '../../services/transport.service';
 
 @Component({
   selector: 'app-line-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './line-list.component.html',
   styleUrls: ['./line-list.component.css']
 })
 export class LineListComponent implements OnInit {
-  // Données pour les APIs 1, 3, 4
+  private transport = inject(TransportService);
+
   lignes: any[] = [];
+  filteredLignes: any[] = [];
+  searchQuery = '';
+  isLoading = true;
+
+  // Détail ligne
   selectedLigne: any = null;
   arrets: any[] = [];
   horaires: any[] = [];
-
-  // Données pour l'API 5 (Détails d'un arrêt spécifique)
   selectedStopDetails: any = null;
 
-  // Données pour l'API 6 (Arrêts à proximité)
-  nearbyStops: any[] = [];
-  isSearchingNearby: boolean = false;
-
-  constructor(private transportService: TransportService) {}
-
   ngOnInit(): void {
-    this.loadAllLines();
+    this.loadLines();
   }
 
-  // API 1 : Charger toutes les lignes
-  loadAllLines(): void {
-    this.transportService.getLines().subscribe({
-      next: (data) => this.lignes = data,
-      error: (err) => console.error('Erreur lignes:', err)
+  loadLines(): void {
+    this.transport.getLines().subscribe({
+      next: (data) => {
+        this.lignes = data;
+        this.filteredLignes = data;
+        this.isLoading = false;
+      },
+      error: () => this.isLoading = false
     });
   }
 
-  // API 2, 3 et 4 : Quand on clique sur une ligne
-  onSelectLigne(ligne: any) {
-    this.selectedLigne = ligne;
-    this.selectedStopDetails = null; // Reset les détails d'arrêt précédents
-
-    // Charger les arrêts de la ligne (API 3)
-    this.transportService.getLineStops(ligne.id).subscribe(data => {
-      this.arrets = data;
-    });
-
-    // Charger les horaires (API 4)
-    this.transportService.getLineSchedule(ligne.id).subscribe(data => {
-      this.horaires = data;
-    });
-  }
-
-  // API 5 : Charger les détails d'un arrêt quand on clique dessus dans la liste
-  onSelectStop(stopId: number) {
-    this.transportService.getStopDetail(stopId).subscribe({
-      next: (data) => this.selectedStopDetails = data,
-      error: (err) => console.error('Erreur détails arrêt:', err)
-    });
-  }
-
-  // API 6 : Trouver les arrêts proches via la position du navigateur
-  findNearbyStops() {
-    this.isSearchingNearby = true;
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-          
-          this.transportService.getNearbyStops(lat, lon).subscribe({
-            next: (data) => {
-              this.nearbyStops = data;
-              this.isSearchingNearby = false;
-            },
-            error: (err) => {
-              console.error('Erreur arrêts proches:', err);
-              this.isSearchingNearby = false;
-            }
-          });
-        },
-        (error) => {
-          console.error('Erreur Géolocalisation:', error);
-          this.isSearchingNearby = false;
-        }
-      );
-    } else {
-      alert("La géolocalisation n'est pas supportée par votre navigateur.");
-      this.isSearchingNearby = false;
+  onSearch() {
+    const q = this.searchQuery.toLowerCase().trim();
+    if (!q) {
+      this.filteredLignes = this.lignes;
+      return;
     }
+    this.filteredLignes = this.lignes.filter(l =>
+      l.nom?.toLowerCase().includes(q) ||
+      l.code?.toLowerCase().includes(q)
+    );
+  }
+
+  onSelectLigne(ligne: any) {
+    if (this.selectedLigne?.id === ligne.id) {
+      this.selectedLigne = null;
+      return;
+    }
+
+    this.selectedLigne = ligne;
+    this.arrets = [];
+    this.horaires = [];
+    this.selectedStopDetails = null;
+
+    this.transport.getLineStops(ligne.id).subscribe({
+      next: (data) => this.arrets = data
+    });
+
+    this.transport.getLineSchedule(ligne.id).subscribe({
+      next: (data) => this.horaires = data
+    });
+  }
+
+  onSelectStop(stopId: number) {
+    this.transport.getStopDetail(stopId).subscribe({
+      next: (data) => this.selectedStopDetails = data
+    });
+  }
+
+  closeDetail() {
+    this.selectedLigne = null;
+    this.selectedStopDetails = null;
   }
 }
+

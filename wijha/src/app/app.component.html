@@ -1,50 +1,64 @@
-<!-- LAYOUT (header + bottom nav) seulement si pas login/register -->
 @if (showLayout) {
-  <!-- ===== HEADER ===== -->
   <header class="app-header">
-    <div class="header-left">
+    <div class="header-inner">
       <a routerLink="/home" class="logo">
-        <i class="fas fa-bus"></i>
-        <span>WIJHA</span>
+        <span class="logo-mark">W</span>
+        <span class="logo-text">WIJHA</span>
       </a>
-    </div>
 
-    <!-- Nav desktop -->
-    <nav class="desktop-nav">
-      @for (item of navItems; track item.path) {
-        <a [routerLink]="item.path"
-           routerLinkActive="active"
-           class="nav-link">
-          <i [class]="item.icon"></i>
-          <span>{{ item.label }}</span>
-        </a>
-      }
-    </nav>
+      <nav class="nav-desktop">
+        @for (item of navItems; track item.path) {
+          <a [routerLink]="item.path"
+             routerLinkActive="active"
+             class="nav-item">
+            {{ item.label }}
+          </a>
+        }
+      </nav>
 
-    <div class="header-right">
-      <span class="user-name">{{ authService.getCurrentUser()?.nom }}</span>
-      <button class="btn-logout" (click)="logout()">
-        <i class="fas fa-sign-out-alt"></i>
-      </button>
+      <div class="header-user">
+        <div class="user-pill">
+          <div class="avatar">{{ authService.getCurrentUser()?.nom?.charAt(0) || 'U' }}</div>
+          <span class="user-name">{{ authService.getCurrentUser()?.nom }}</span>
+        </div>
+        <button class="btn-logout" (click)="openLogoutModal()" title="Déconnexion">
+          <i class="fas fa-arrow-right-from-bracket"></i>
+        </button>
+      </div>
     </div>
   </header>
 }
 
-<!-- ===== CONTENU PRINCIPAL ===== -->
 <main [class.with-layout]="showLayout">
   <router-outlet />
 </main>
 
-<!-- ===== BOTTOM NAV (mobile) ===== -->
 @if (showLayout) {
-  <nav class="bottom-nav">
+  <nav class="nav-mobile">
     @for (item of navItems; track item.path) {
       <a [routerLink]="item.path"
          routerLinkActive="active"
-         class="bottom-nav-item">
-        <i [class]="item.icon"></i>
-        <span>{{ item.label }}</span>
+         class="nav-mobile-item">
+        <span class="mobile-dot" routerLinkActive="dot-active"></span>
+        {{ item.label }}
       </a>
     }
   </nav>
+}
+
+<!-- Modal de confirmation logout -->
+@if (showLogoutModal) {
+  <div class="modal-overlay" (click)="closeLogoutModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-icon">
+        <i class="fas fa-arrow-right-from-bracket"></i>
+      </div>
+      <h3>Se déconnecter ?</h3>
+      <p>Vous allez être redirigé vers la page de connexion.</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeLogoutModal()">Annuler</button>
+        <button class="btn-confirm" (click)="confirmLogout()">Déconnexion</button>
+      </div>
+    </div>
+  </div>
 }

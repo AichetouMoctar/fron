@@ -39,30 +39,3 @@ export const routes: Routes = [
   { path: '**', redirectTo: '/home' }
 ];
 
-
-
-// // src/app/app.routes.ts
-// import { Routes } from '@angular/router';
-// import { authGuard } from './guards/auth.guard';
-
-// export const routes: Routes = [
-//   // ===== Pages publiques =====
-//   {
-//     path: 'login',
-//     loadComponent: () => import('./pages/login/login').then(m => m.LoginComponent)
-//   },
-//   {
-//     path: 'register',
-//     loadComponent: () => import('./pages/register/register').then(m => m.RegisterComponent)
-//   },
-
-//   // ===== Pages protégées (citoyen) =====
-//   {
-//     path: 'map',
-//     loadComponent: () => import('../app/components/line-list/line-list.component').then(m => m.LineListComponent),
-//     canActivate: [authGuard]
-//   },
-//   { path: '', redirectTo: '/map', pathMatch: 'full' },
-//   { path: '**', redirectTo: '/map' }
-// ];
-

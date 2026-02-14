@@ -1,203 +1,144 @@
-:host { display: block; }
-
+/* ===== CARTE PLEIN ÉCRAN ===== */
 .home-page {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px 16px;
+  margin: 0;
+  padding: 0;
+  height: calc(100vh - 56px); /* hauteur totale - header */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-/* Hero */
-.hero {
-  background: linear-gradient(135deg, #1e3a5f 0%, #2a5298 100%);
-  color: white;
-  border-radius: 16px;
-  padding: 32px 24px;
-  text-align: center;
-  margin-bottom: 24px;
+.map-section {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
 }
 
-.hero h1 {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 8px;
+.map-canvas {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
-.hero p {
-  font-size: 14px;
-  opacity: 0.8;
-  margin-bottom: 20px;
+/* Filtres en overlay sur la carte en bas */
+.lines-filter {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 60px;
+  z-index: 10;
+  background: white;
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 }
 
-.btn-gps {
-  background: #ef4444;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
-  font-size: 14px;
+.filter-title {
+  font-size: 12px;
   font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: background 0.2s, transform 0.1s;
-}
-
-.btn-gps:hover { background: #dc2626; }
-.btn-gps:active { transform: scale(0.97); }
-.btn-gps:disabled { opacity: 0.6; cursor: not-allowed; }
-
-/* Sections */
-.section {
-  margin-bottom: 24px;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.section-title {
-  font-size: 16px;
-  font-weight: 700;
   color: #1e293b;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.section-title i {
-  color: #3b82f6;
-  font-size: 14px;
-}
-
-.see-all {
-  color: #3b82f6;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
+  margin-bottom: 6px;
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-/* Cards */
-.cards-grid {
+.filter-title i { color: #3b82f6; font-size: 11px; }
+
+/* Stats en overlay en haut à gauche */
+.stats-row {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  display: flex;
+  gap: 6px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card i {
+  font-size: 14px;
+  color: #3b82f6;
+  width: 28px;
+  height: 28px;
+  background: #eff6ff;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-card strong { font-size: 15px; color: #1e293b; display: block; }
+.stat-card span { font-size: 10px; color: #64748b; }
+
+/* Ligne sélectionnée en overlay */
+.selected-line-info {
+  position: absolute;
+  bottom: 70px;
+  left: 12px;
+  right: 60px;
+  z-index: 10;
+  background: white;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Contrôles à droite */
+.map-controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
   display: flex;
   flex-direction: column;
+  gap: 6px;
+  z-index: 10;
+}
+
+/* Légende en bas à gauche */
+.map-legend {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 10;
+}
+
+/* Masquer le loading une fois la carte chargée */
+.map-loading {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 8px;
-}
-
-.line-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: white;
-  padding: 14px 16px;
-  border-radius: 12px;
-  text-decoration: none;
-  color: #1e293b;
-  transition: box-shadow 0.2s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-.line-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.line-badge {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  color: white;
-  font-weight: 700;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.line-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.line-info strong {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.line-sub {
-  font-size: 12px;
+  background: rgba(241, 245, 249, 0.9);
   color: #64748b;
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.line-card .fa-chevron-right {
-  color: #cbd5e1;
-  font-size: 12px;
-}
-
-/* Stop cards */
-.stop-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: white;
-  padding: 12px 16px;
-  border-radius: 10px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-.stop-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #fef2f2;
-  color: #ef4444;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-size: 14px;
-}
-
-.stop-info strong {
-  display: block;
-  font-size: 14px;
-}
-
-.distance {
-  font-size: 12px;
-  color: #64748b;
-}
-
-/* Empty state */
-.empty-state {
-  text-align: center;
-  padding: 40px 20px;
-  color: #94a3b8;
-}
-
-.empty-state i {
-  font-size: 32px;
-  margin-bottom: 8px;
-}
-
-.empty-state p {
-  font-size: 14px;
+  z-index: 20;
 }
 
 /* Mobile */
-@media (max-width: 480px) {
-  .hero { padding: 24px 16px; }
-  .hero h1 { font-size: 20px; }
+@media (max-width: 768px) {
+  .home-page {
+    height: calc(100vh - 56px - 64px); /* header + bottom-nav */
+  }
+  .stats-row { display: none; }
+  .selected-line-info { bottom: 60px; right: 12px; }
+  .lines-filter { right: 12px; }
 }
