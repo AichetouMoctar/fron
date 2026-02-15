@@ -3,7 +3,7 @@ export interface Utilisateur {
   nom: string;
   email: string;
   telephone?: string;
-  role: 'ADMIN_STP' | 'GESTIONNAIRE' | 'CHAUFFEUR' | 'CITOYEN';
+  role: string |'CITOYEN';
   actif: boolean;
   latitude?: number;
   longitude?: number;

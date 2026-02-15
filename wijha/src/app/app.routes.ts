@@ -23,6 +23,11 @@ export const routes: Routes = [
     loadComponent: () => import('./components/line-list/line-list.component').then(m => m.LineListComponent),
     canActivate: [authGuard]
   },
+    {
+    path: 'profile',
+    loadComponent: () => import('./components/profile/profile').then(m => m.ProfileComponent),
+    canActivate: [authGuard]
+  },
   // {
   //   path: 'lines/:id',
   //   loadComponent: () => import('./pages/line-detail/line-detail.component').then(m => m.LineDetailComponent),

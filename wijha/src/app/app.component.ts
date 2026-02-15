@@ -31,6 +31,7 @@ export class AppComponent {
   navItems = [
     { path: '/home',  label: 'Accueil' },
     { path: '/lines', label: 'Lignes' },
+    { path: '/profile', label: 'Profile' },
   ];
 
   openLogoutModal() {

@@ -1,0 +1,122 @@
+<!-- BANNIÈRE DE COUVERTURE + AVATAR -->
+<div class="cover-section">
+  <div class="avatar-container">
+    <div class="avatar-large">
+      <img src="4.png" alt="Avatar">
+    </div>
+    <div class="avatar-actions">
+      <button class="btn-icon" (click)="onUploadPhoto()"><i class="fas fa-camera"></i></button>
+      <button class="btn-icon" (click)="onEditCover()"><i class="fas fa-image"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENU PRINCIPAL -->
+<main class="main-container">
+  @if (isLoading) {
+    <div class="loading">Chargement...</div>
+  } @else if (error) {
+    <div class="error">{{ error }}</div>
+  } @else if (user) {
+    <!-- EN-TÊTE NOM + STATISTIQUES -->
+    <div class="profile-header-row">
+      <div class="profile-title">
+        <h1>{{ user.nom }}</h1>
+        <!-- <span class="badge"><i class="fas fa-star"></i> Membre {{ user.role }} · {{ stats.trips }} trajets</span> -->
+      </div>
+    </div>
+
+    <!-- GRILLE D'INFORMATIONS PERSONNELLES -->
+    <div class="info-grid">
+      <div class="info-card">
+        <i class="fas fa-envelope"></i>
+        <h3>Email</h3>
+        <p>{{ user.email }}</p>
+        <small>vérifié</small>
+      </div>
+      <div class="info-card">
+        <i class="fas fa-phone-alt"></i>
+        <h3>Téléphone</h3>
+        <p>{{ user.telephone || 'Non renseigné' }}</p>
+        <small>principal</small>
+      </div>
+      <div class="info-card">
+        <i class="fas fa-id-card"></i>
+        <h3>Rôle</h3>
+        <p>{{ user.role }}</p>
+        <small>statut</small>
+      </div>
+    </div>
+
+    <!-- BOUTONS D'ACTION -->
+    <div class="action-buttons">
+      <button class="btn btn-outline" (click)="onEditProfile()"><i class="fas fa-edit"></i> Modifier</button>
+      <button class="btn btn-danger" (click)="onDeleteAccount()"><i class="fas fa-trash-alt"></i> Supprimer</button>
+    </div>
+  }
+</main>
+
+<!-- MODAL D'ÉDITION -->
+@if (showEditModal) {
+  <div class="modal-overlay" (click)="closeEditModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Modifier le profil</h3>
+        <button class="modal-close" (click)="closeEditModal()">&times;</button>
+      </div>
+      <form [formGroup]="editForm" (ngSubmit)="saveProfile()">
+        <div class="form-group">
+          <label for="nom">Nom complet</label>
+          <input type="text" id="nom" formControlName="nom" class="form-control">
+          @if (editForm.get('nom')?.invalid && editForm.get('nom')?.touched) {
+            <small class="error-text">Nom requis (min 2 caractères)</small>
+          }
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" [value]="user?.email" class="form-control" readonly disabled>
+          <small>L'email ne peut pas être modifié</small>
+        </div>
+        <div class="form-group">
+          <label for="telephone">Téléphone</label>
+          <input type="tel" id="telephone" formControlName="telephone" class="form-control" placeholder="+33 6 12 34 56 78">
+          @if (editForm.get('telephone')?.invalid && editForm.get('telephone')?.touched) {
+            <small class="error-text">Format invalide</small>
+          }
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeEditModal()">Annuler</button>
+          <button type="submit" class="btn-save" [disabled]="editForm.invalid || isSaving">
+            @if (isSaving) { <i class="fas fa-spinner fa-spin"></i> } Enregistrer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- MODAL DE SUPPRESSION -->
+@if (showDeleteModal) {
+  <div class="modal-overlay" (click)="closeDeleteModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3>Supprimer votre compte ?</h3>
+      <p>Cette action est irréversible. Toutes vos données seront effacées.</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeDeleteModal()">Annuler</button>
+        <button class="btn-danger" (click)="confirmDelete()" [disabled]="isDeleting">
+          @if (isDeleting) { <i class="fas fa-spinner fa-spin"></i> } Supprimer définitivement
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+
+@if (showNotification) {
+  <div class="notification" [class.success]="notificationType === 'success'" [class.error]="notificationType === 'error'">
+    {{ notificationMessage }}
+  </div>
+}
