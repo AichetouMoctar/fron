@@ -22,7 +22,10 @@ export class LineListComponent implements OnInit {
   selectedLigne: any = null;
   arrets: any[] = [];
   horaires: any[] = [];
+  
+  // Détail arrêt et Plan de passage
   selectedStopDetails: any = null;
+  selectedPlan: any = null; // <--- Ajouté pour le plan de passage JSON
 
   ngOnInit(): void {
     this.loadLines();
@@ -61,6 +64,7 @@ export class LineListComponent implements OnInit {
     this.arrets = [];
     this.horaires = [];
     this.selectedStopDetails = null;
+    this.selectedPlan = null;
 
     this.transport.getLineStops(ligne.id).subscribe({
       next: (data) => this.arrets = data
@@ -72,14 +76,41 @@ export class LineListComponent implements OnInit {
   }
 
   onSelectStop(stopId: number) {
+    // 1. Charger les infos de base de l'arrêt
     this.transport.getStopDetail(stopId).subscribe({
       next: (data) => this.selectedStopDetails = data
+    });
+
+    // 2. Charger le plan de passage (les lignes et horaires calculés)
+    this.transport.getStopPlan(stopId).subscribe({
+      next: (data) => this.selectedPlan = data,
+      error: (err) => console.error("Erreur lors du chargement du plan", err)
+    });
+  }
+
+  // Méthode pour télécharger le PDF
+  exportPdf(stopId: number) {
+    this.transport.downloadStopPlanPdf(stopId).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `plan_passage_arret_${stopId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error("Erreur lors du téléchargement du PDF", err);
+        alert("Impossible de générer le PDF. Vérifiez votre connexion.");
+      }
     });
   }
 
   closeDetail() {
     this.selectedLigne = null;
     this.selectedStopDetails = null;
+    this.selectedPlan = null;
   }
 }
-

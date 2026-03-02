@@ -44,6 +44,19 @@ export class TransportService {
     return this.http.get<any[]>(`${this.baseUrl}/stops/nearby`, { params, withCredentials: true });
   }
 
+  // 7. Obtenir le plan de passage détaillé (Horaires calculés par arrêt)
+  getStopPlan(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/stops/${id}/plan`, { withCredentials: true });
+  }
+
+  // 8. Télécharger le plan de passage en PDF
+  downloadStopPlanPdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/stops/${id}/plan/pdf`, {
+      responseType: 'blob', // Indispensable pour traiter un fichier PDF
+      withCredentials: true 
+    });
+  }
+
   
   
 }
