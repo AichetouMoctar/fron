@@ -76,39 +76,62 @@ export class LineListComponent implements OnInit {
   }
 
   onSelectStop(stopId: number) {
-    // 1. Charger les infos de base de l'arrêt
     this.transport.getStopDetail(stopId).subscribe({
       next: (data) => this.selectedStopDetails = data
     });
 
-    // 2. Charger le plan de passage (les lignes et horaires calculés)
     this.transport.getStopPlan(stopId).subscribe({
       next: (data) => this.selectedPlan = data,
-      error: (err) => console.error("Erreur lors du chargement du plan", err)
+      error: (err: any) => console.error("Erreur lors du chargement du plan", err)
     });
   }
 
-  // Méthode pour télécharger le PDF
-  exportPdf(stopId: number) {
-    this.transport.downloadStopPlanPdf(stopId).subscribe({
-      next: (blob) => {
+  /**
+   * MÉTHODE 1 : Export de la fiche complète de LA LIGNE
+   */
+  exportLignePdf(ligneId: number): void {
+    this.transport.downloadLignePlanPdf(ligneId).subscribe({
+      next: (blob: Blob) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `plan_passage_arret_${stopId}.pdf`;
+        a.download = `fiche_horaires_ligne_${this.selectedLigne.code}.pdf`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
       },
-      error: (err) => {
-        console.error("Erreur lors du téléchargement du PDF", err);
-        alert("Impossible de générer le PDF. Vérifiez votre connexion.");
+      error: (err: any) => {
+        console.error("Erreur export ligne", err);
+        alert("Impossible de générer le PDF de la ligne.");
       }
     });
   }
 
-  closeDetail() {
+  /**
+   * MÉTHODE 2 : Export du plan pour UN ARRÊT
+   * Renommée 'exportPdf' pour correspondre à ton HTML (Ligne 101)
+   */
+  exportPdf(stopId: number): void {
+    this.transport.downloadStopPlanPdf(stopId).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `passage_arret_${stopId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err: any) => {
+        console.error("Erreur export arrêt", err);
+        alert("Impossible de générer le PDF de l'arrêt.");
+      }
+    });
+  }
+
+  closeDetail(): void {
     this.selectedLigne = null;
     this.selectedStopDetails = null;
     this.selectedPlan = null;

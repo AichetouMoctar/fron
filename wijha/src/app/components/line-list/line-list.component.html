@@ -46,14 +46,22 @@
         <i class="fas fa-arrow-left"></i> Retour
       </div>
 
-      <div class="detail-header" [style.border-left-color]="selectedLigne.couleur || '#3b82f6'">
-        <div class="line-badge large" [style.background]="selectedLigne.couleur || '#3b82f6'">
-          {{ selectedLigne.code || 'L' }}
+      <div class="detail-header" [style.border-left-color]="selectedLigne.couleur || '#3b82f6'" 
+           style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <div class="line-badge large" [style.background]="selectedLigne.couleur || '#3b82f6'">
+            {{ selectedLigne.code || 'L' }}
+          </div>
+          <div>
+            <h2 style="margin: 0;">{{ selectedLigne.nom }}</h2>
+            <span>{{ selectedLigne.arretDepartNom || '—' }} → {{ selectedLigne.arretArriveeNom || '—' }}</span>
+          </div>
         </div>
-        <div>
-          <h2>{{ selectedLigne.nom }}</h2>
-          <span>{{ selectedLigne.arretDepartNom || '—' }} → {{ selectedLigne.arretArriveeNom || '—' }}</span>
-        </div>
+
+        <button (click)="exportLignePdf(selectedLigne.id)" 
+                style="background: #be123c; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px;">
+          <i class="fas fa-file-pdf"></i> Fiche Horaires
+        </button>
       </div>
 
       <section class="card">
@@ -76,79 +84,50 @@
             </div>
           }
         </div>
-        @if (arrets.length === 0) {
-          <p class="no-data">Aucun arrêt enregistré</p>
-        }
       </section>
 
       <section class="card">
-        <h3><i class="fas fa-clock"></i> Horaires de départ</h3>
+        <h3><i class="fas fa-clock"></i> Départs du Terminus</h3>
         <div class="horaires-grid">
           @for (h of horaires; track h.id) {
             <div class="horaire-chip">{{ h.heureDepart }}</div>
           }
         </div>
-        @if (horaires.length === 0) {
-          <p class="no-data">Aucun horaire programmé</p>
-        }
       </section>
 
       @if (selectedStopDetails) {
-        <section class="card stop-detail">
+        <section class="card stop-detail" style="border: 2px solid #fbbf24;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h3><i class="fas fa-info-circle"></i> {{ selectedStopDetails.nom }}</h3>
+            <h3><i class="fas fa-info-circle"></i> Arrêt : {{ selectedStopDetails.nom }}</h3>
             
-            <button (click)="exportPdf(selectedStopDetails.id)" 
-                    style="background: #dc2626; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold;">
-              <i class="fas fa-file-pdf"></i> PDF
-            </button>
+            
           </div>
 
           <div class="stop-meta">
-            @if (selectedStopDetails.code) {
-              <div class="meta-item"><span>Code</span><strong>{{ selectedStopDetails.code }}</strong></div>
-            }
+            <div class="meta-item"><span>Code</span><strong>{{ selectedStopDetails.code }}</strong></div>
             <div class="meta-item"><span>Latitude</span><strong>{{ selectedStopDetails.latitude }}</strong></div>
             <div class="meta-item"><span>Longitude</span><strong>{{ selectedStopDetails.longitude }}</strong></div>
-            @if (selectedStopDetails.adresse) {
-              <div class="meta-item"><span>Adresse</span><strong>{{ selectedStopDetails.adresse }}</strong></div>
-            }
           </div>
-
+          
           <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed #ccc;">
-            <h4 style="margin-bottom: 10px; font-size: 0.95rem; color: #374151;">
-              <i class="fas fa-bus"></i> Passages à cet arrêt
-            </h4>
-            
+            <h4 style="font-size: 0.9rem;"><i class="fas fa-bus"></i> Passages calculés ici :</h4>
             @if (selectedPlan) {
-              <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
                 @for (passage of selectedPlan.passages; track passage.ligneCode) {
-                  <div style="background: #f3f4f6; padding: 10px; border-radius: 8px;">
-                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
-                      <span style="background: #3b82f6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">
-                        {{ passage.ligneCode }}
-                      </span>
-                      <small>vers <strong>{{ passage.destination }}</strong></small>
-                    </div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                  <div style="background: #f3f4f6; padding: 8px; border-radius: 6px;">
+                    <small>Ligne <strong>{{ passage.ligneCode }}</strong> vers {{ passage.destination }}</small>
+                    <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px;">
                       @for (heure of passage.heuresPassage; track heure) {
-                        <span style="background: #dcfce7; color: #166534; padding: 1px 6px; border-radius: 4px; font-size: 0.8rem; border: 1px solid #bbf7d0;">
-                          {{ heure }}
-                        </span>
+                        <span class="horaire-chip" style="font-size: 0.75rem; background: white;">{{ heure }}</span>
                       }
                     </div>
                   </div>
                 }
               </div>
-            } @else {
-              <p style="font-size: 0.85rem; color: #6b7280; font-style: italic;">
-                <i class="fas fa-spinner fa-spin"></i> Chargement des passages...
-              </p>
             }
           </div>
         </section>
       }
     </div>
   }
-
 </div>
