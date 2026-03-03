@@ -25,7 +25,7 @@ export class LineListComponent implements OnInit {
   
   // Détail arrêt et Plan de passage
   selectedStopDetails: any = null;
-  selectedPlan: any = null; // <--- Ajouté pour le plan de passage JSON
+  selectedPlan: any = null; 
 
   ngOnInit(): void {
     this.loadLines();
