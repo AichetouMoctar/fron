@@ -108,29 +108,7 @@ export class LineListComponent implements OnInit {
     });
   }
 
-  /**
-   * MÉTHODE 2 : Export du plan pour UN ARRÊT
-   * Renommée 'exportPdf' pour correspondre à ton HTML (Ligne 101)
-   */
-  exportPdf(stopId: number): void {
-    this.transport.downloadStopPlanPdf(stopId).subscribe({
-      next: (blob: Blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `passage_arret_${stopId}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      },
-      error: (err: any) => {
-        console.error("Erreur export arrêt", err);
-        alert("Impossible de générer le PDF de l'arrêt.");
-      }
-    });
-  }
-
+  
   closeDetail(): void {
     this.selectedLigne = null;
     this.selectedStopDetails = null;
